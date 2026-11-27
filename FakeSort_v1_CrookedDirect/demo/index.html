@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fake Sort v1 — Runner</title><style>body{font:16px system-ui;max-width:800px;margin:24px auto;padding:16px;background:#f4f7fa;color:#142b40}textarea,select,button{font:inherit;padding:12px;max-width:100%;box-sizing:border-box}textarea{width:100%;height:110px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:16px}button{background:#164c70;color:white;border:0;border-radius:6px}</style><h1>Fake Sort v1</h1><button id="lang">한국어</button><p id="desc"></p><textarea id="input">7, 2, 5, 4, 1, 4, 6</textarea><label id="ml" for="mode"></label><select id="mode"><option>optimized</option><option>advanced</option><option>pure</option><option>original</option></select> <button id="go"></button><pre id="out" aria-live="polite"></pre><script>
+// Fake Sort: finite numeric arrays; modifies and returns input.
+const networks = {"2": [[1, 0]], "3": [[1, 0], [2, 1], [1, 0]], "4": [[1, 0], [3, 2], [2, 0], [3, 1], [2, 1]], "5": [[3, 0], [4, 1], [2, 0], [3, 1], [1, 0], [4, 2], [2, 1], [4, 3], [3, 2]], "6": [[5, 0], [3, 1], [4, 2], [2, 1], [4, 3], [3, 0], [5, 2], [1, 0], [3, 2], [5, 4], [2, 1], [4, 3]], "7": [[6, 0], [3, 2], [5, 4], [2, 0], [4, 1], [6, 3], [1, 0], [5, 2], [4, 3], [2, 1], [6, 4], [3, 2], [5, 4], [2, 1], [4, 3], [6, 5]], "8": [[2, 0], [3, 1], [6, 4], [7, 5], [4, 0], [5, 1], [6, 2], [7, 3], [1, 0], [3, 2], [5, 4], [7, 6], [4, 2], [5, 3], [4, 1], [6, 3], [2, 1], [4, 3], [6, 5]]};
+function fakeSort(a,{mode="optimized",scratch=null}={}){
+ if(!["original","pure","advanced","optimized"].includes(mode))throw Error("unknown mode");
+ if(!Array.isArray(a)&&!(a instanceof Float64Array))throw Error("Array or Float64Array required");
+ for(const v of a)if(!Number.isFinite(v))throw Error("finite numbers only");
+ const n=a.length;if(n<2)return a;
+ const original=mode==="original", c8=mode==="advanced"||mode==="optimized";
+ const b=scratch??new Array(n);if((!Array.isArray(b)&&!(b instanceof Float64Array))||b===a||b.length<n|| (ArrayBuffer.isView(a)&&ArrayBuffer.isView(b)&&a.buffer===b.buffer))throw Error("invalid scratch");
+ function small(src,l,k){const v=Array.from({length:k},(_,i)=>src[l+i]);for(const [i,j] of networks[k])if(v[i]<v[j])[v[i],v[j]]=[v[j],v[i]];for(let i=0;i<k;i++)a[l+i]=v[i];}
+ if(c8&&n<=8){small(a,0,n);return a;}
+ let rooms=[[0,n-1,false,false]],next=[];
+ while(rooms.length){next.length=0;for(const [l,r,flag,parity] of rooms){
+ const src=parity?b:a,dst=parity?a:b,pi=l+Math.floor((r-l)/(flag?4:2)),p=src[pi];let w=l,z=r;
+ function low(i){const v=src[i];if(v<p)dst[w++]=v;else if(v>p)dst[z--]=v;}
+ if(original){for(let i=l;i<=r;i++)low(i);}else{for(let i=l;i<=pi;i++)low(i);for(let i=r;i>pi;i--){const v=src[i];if(v>p)dst[z--]=v;else if(v<p)dst[w++]=v;}}
+ if(original||parity||w!==l||z!==r)for(let i=w;i<=z;i++)a[i]=p;
+ function child(x,y){const k=y-x+1;if(k<1)return;if(k===1){if(!parity)a[x]=dst[x];return;}if(c8&&k<=8){small(dst,x,k);return;}next.push([x,y,!original&&8*k>7*(r-l+1),!parity]);}
+ child(l,w-1);child(z+1,r);
+ }if(mode==="optimized"){[rooms,next]=[next,rooms];}else{rooms=next;next=[];}}return a;
+}
+if(typeof module!=="undefined")module.exports={fakeSort};
+
+const $=id=>document.getElementById(id);let ko=false,last=null;
+function render(){document.documentElement.lang=ko?'ko':'en';$('lang').textContent=ko?'English':'한국어';$('desc').textContent=ko?'유한한 숫자를 쉼표 또는 공백으로 구분하세요. 단일 스레드 실행기입니다.':'Enter finite numbers separated by commas or spaces. Single-threaded runner.';$('ml').textContent=ko?'모드: ':'Mode: ';$('go').textContent=ko?'정렬 실행':'Sort';$('out').textContent=!last?(ko?'결과가 여기에 표시됩니다.':'Results appear here.'):last.error?(ko?'오류: ':'Error: ')+(ko?({'finite numbers only':'유한한 숫자만 허용','Maximum 10000 elements':'최대 10000개'}[last.error]||last.error):last.error):last.a.join(', ')+'\n'+(ko?'검증: ':'Check: ')+last.check+'\n'+(ko?'참고 시간: ':'Elapsed: ')+last.dt.toFixed(3)+' ms '+(ko?'(입력 검사 및 할당 포함, 단일 실행; 벤치마크 아님)':'(includes validation and allocation; single run, not a benchmark)');}
+$('lang').onclick=()=>{ko=!ko;render()};$('go').onclick=()=>{try{const raw=$('input').value.trim(),a=raw?raw.split(/[\s,]+/).map(Number):[];if(a.length>10000)throw Error('Maximum 10000 elements');const ref=a.slice().sort((a,b)=>a-b),t=performance.now();fakeSort(a,{mode:$('mode').value});last={a,dt:performance.now()-t,check:a.every((v,i)=>v===ref[i])?'PASS':'FAIL'};}catch(e){last={error:e.message}}render()};render();</script></html>

@@ -1,0 +1,18 @@
+R03 — C++ verification
+GCC 14.2.0, C++17, -O3 -fopenmp, Linux.
+Source copied unchanged from FakeSort_release_v2/FakeSort.cpp.
+Uploaded TXT matches after newline normalization.
+SHA256 ae214d2705bfa4526b6f4e7ffcc961023aefb5e96e8c7ce3252f346467c53799
+Commands:
+g++ -O3 -std=c++17 -fopenmp src/FakeSort.cpp -o fake_sort && ./fake_sort
+g++ -O3 -std=c++17 -fopenmp tests/test.cpp -o test_cpp && ./test_cpp
+PASS 3870
+PASS exhaustive 59046
+PASS parallel configurations 360
+PASS rejection 21
+Total 63297 checks (including overlapping cases).
+Exhaustive ternary arrays lengths 0–8, six modes, one requested thread.
+Parallel tests: Wave and Async, requested threads 1/2/4, cutoff 2/16/2048, sizes 9/127/1024/4096, five patterns. Wave ignores cutoff after validation. Actual thread counts not instrumented.
+No race detector, performance measurement, other compiler/platform or huge input verification.
+Known source-review issue: pws_pure uses int arithmetic 8*k and 7*(r-l+1), unlike pws with long long; potential signed overflow for very large rooms. Not fixed or reproduced. Public size limit alone does not guarantee safety. Conservative bound for Pure: n <= INT_MAX/8.
+Pure C++ reuses room lists within call; JS Pure does not. C++ optimized scratch is allocated within each public call. Historical qs/run helpers remain unchanged and are not public modes.
