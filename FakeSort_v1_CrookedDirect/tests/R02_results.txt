@@ -1,7 +1,0 @@
-v22.16.0 {"historical-style":5160,"exhaustive ternary":39364,"fractional scratch matrix":216,"finite extremes":8,"rejected":11}
-PASS 44759
-short input invalid scratch accepted: true
-frozen scratch output: [ 1, 2 ]
-Source SHA-256: 0df8a9764ac1dc1fd30420c66ef78617955e0d3543b7652011a0cb788b5b2302
-Original JS copied unchanged; node --check passed. ZIP entry byte-identical; HTML core matches after trimming surrounding whitespace.
-Tests normalize signed zero; stability not tested or promised. Ordinary writable arrays required; frozen scratch is not rejected and can corrupt output. Scratch validation skipped for n<2. No performance or browser testing.
