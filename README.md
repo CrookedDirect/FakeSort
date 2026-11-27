@@ -99,3 +99,11 @@ Fake Sort is an experimental project, not a claim of academic novelty, patentabi
 ## License
 
 Released under the [MIT License](LICENSE).
+
+## AI Assistance
+
+Fake Sort was conceived and developed by CrookedDirect with assistance from OpenAI's ChatGPT.
+
+ChatGPT contributed to algorithm discussions, optimization proposals, counterexample analysis, implementation, testing, and documentation.
+
+Research direction and final design decisions were led by CrookedDirect. AI assistance does not constitute independent scientific validation.
