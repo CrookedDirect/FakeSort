@@ -99,3 +99,11 @@ Fake Sort는 실험적 프로젝트이며 학술적 신규성, 특허성 또는 
 ## 라이선스
 
 [MIT 라이선스](LICENSE)를 적용한다.
+
+## AI 활용
+
+Fake Sort는 CrookedDirect가 구상하고 OpenAI의 ChatGPT를 활용하여 개발한 정렬 알고리즘입니다.
+
+ChatGPT는 알고리즘 논의, 최적화 제안, 반례 분석, 구현, 실험 및 문서 작성에 활용되었습니다.
+
+연구 방향과 최종 설계 결정은 CrookedDirect가 주도했습니다. AI의 참여가 독립적인 학술 검증을 의미하지는 않습니다.
