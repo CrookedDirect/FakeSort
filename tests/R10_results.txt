@@ -1,0 +1,4 @@
+Final package verification
+Node.js v22.16.0: PASS 44759
+GCC 14.2.0 / OpenMP: PASS 3870; exhaustive 59046; parallel configurations 360; rejection 21.
+Original hashes, source equality, historical benchmark equality, CSV aggregation, Markdown relative links and HTML script syntax checked. Runner embeds unchanged JS. User reported both demos working; no independent cross-browser/mobile or race-detector testing. No new performance measurements.
